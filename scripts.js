@@ -12,7 +12,7 @@
     async function getCards(deckId, numOfCards) {
         try {
             const response = await fetch(`https://deckofcardsapi.com/api/deck/${deckId}/draw/?count=${numOfCards}`);
-            //const response = await fetch(`https://prog2700.onrender.com/pokerhandtest/onepair`);
+            //const response = await fetch(`https://prog2700.onrender.com/pokerhandtest/highcard`);
             const data = await response.json();
             return data.cards;
         } catch (error) {
@@ -65,8 +65,12 @@
             if (lastCard.suit !== card.suit || !isFlush) {
                 isFlush = false;
             }
-            if (parseInt(lastCard.value, 10) + 1 !== parseInt(card.value, 10) || (parseInt(lastCard.value) !== 1 && parseInt(card.value !== 10)) || !isStraight) {
-                isStraight = false;
+            if (parseInt(lastCard.value) + 1 !== parseInt(card.value) || !isStraight) {
+                if (parseInt(cards[0].value) === 1 && parseInt(cards[1].value) === 10) { //Handles straigh flush.
+                    isStraight = true;
+                } else {
+                    isStraight = false;
+                }
             }
             if (card.value == 1 || (highCardValue != 1 && parseInt(highCardValue) < parseInt(card.value))) {
                 highCardValue = card.value;
@@ -80,7 +84,8 @@
         lastCard = card;
     })
 
-    if (highCardValue == 1 && isFlush && isStraight) {
+    console.log(cards)
+    if (highCardValue == 1 && parseInt(cards[4].value) === 13 && isFlush && isStraight) {
         bestHand = "a Royal Flush!";
     } else if (isFlush && isStraight) {
         bestHand = "a Straight Flush!"
